@@ -11,7 +11,7 @@ describe User do
   it { should respond_to(:password_digest)}
   it { should respond_to(:password) }
   it { should respond_to(:password_confirmation) }
-  it {should respond_to(:authenticate)}
+  it { should respond_to(:authenticate)}
   it { should be_valid}
 
   describe "when name is not present" do
@@ -57,6 +57,17 @@ describe User do
   	end
 
   	it {should_not be_valid}
+  end
+
+  describe "when email is UPPERCASE" do
+    before do 
+      @user.email = "QWERTY@mail.ru"
+      @user.save
+    end
+    # let(:found_user) { User.find_by_id(@user.id) }
+    it "should have lowercase email" do
+      @user.email.should == "qwerty@mail.ru"
+    end
   end
 
   describe "when password is not present" do
