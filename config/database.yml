@@ -16,7 +16,7 @@ development:
   password: terra-123
   host: localhost
 
-test:
+test: &test
   adapter: postgresql
   database: first_app_test
   username: postgres
@@ -37,3 +37,6 @@ production:
   database: db/production.sqlite3
   pool: 5
   timeout: 5000
+
+cucumber:
+  <<: *test
