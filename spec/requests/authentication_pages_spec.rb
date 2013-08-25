@@ -18,6 +18,8 @@ describe "AuthenticationPages" do
 
       it { should have_selector('title', text: 'Sign in') }
       it { should have_error_message('Invalid') }
+      it { should_not have_link('Profile')}
+      it { should_not have_link('Settings')}
 
       describe "after visiting another page" do
         before {click_link "Home"}
@@ -53,15 +55,27 @@ describe "AuthenticationPages" do
       describe "when attempting to visit a protected page" do
         before do
           visit edit_user_path(user)
-          fill_in "Email",    with: user.email
-          fill_in "Password", with: user.password
-          click_button "Sign in"
+          valid_signin(user)
+        #   # fill_in "Email",    with: user.email
+        #   # fill_in "Password", with: user.password
+        #   # click_button "Sign in"
         end
 
         describe "after signing in" do
-
           it "should render the desired protected page" do
             page.should have_selector('title', text: 'Edit user')
+          end
+
+          describe "when signing in again" do
+            before do
+              delete signout_path
+              visit signin_path
+              valid_signin(user)
+            end
+
+            it "should render the default (profile) page" do
+              page.should have_selector('title', text: user.name)
+            end
           end
         end
       end
@@ -81,6 +95,19 @@ describe "AuthenticationPages" do
         describe "submitting to the update action" do
           before { put user_path(user) }
           specify { response.should redirect_to(signin_path) }
+        end
+      end
+
+      describe "in the Microposts controller" do
+
+        describe "submitting to the create action" do
+          before { post microposts_path}
+          specify { response.should redirect_to(signin_path)}
+        end
+
+        describe "submitting to the destroy action" do
+          before { delete micropost_path(FactoryGirl.create(:micropost))}
+          specify { response.should redirect_to(signin_path)}
         end
       end
     end
@@ -112,6 +139,17 @@ describe "AuthenticationPages" do
         specify {response.should redirect_to(root_url)}
       end
     end
+
+    # describe "as admin user" do 
+    #   let(:admin_user) {FactoryGirl.create(:user)}
+
+    #   before {signin admin_user}
+
+    #   describe "should not delete himself" do
+    #     before {delete user_path(admin_user)}
+    #     specify {response.should_not redirect_to(root_url)}
+    #   end
+    # end
 
   end
 end

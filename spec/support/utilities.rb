@@ -26,6 +26,12 @@ def valid_signin(user)
   click_button "Sign in"
 end
 
+def invalid_signin
+  fill_in "Email",    with: 'asdlfkaj'
+  fill_in "Password", with: 'lsdkfha'
+  click_button "Sign in"
+end
+
 RSpec::Matchers.define :have_error_message do |message|
   match do |page|
     page.should have_selector('div.alert.alert-error', text: message)
